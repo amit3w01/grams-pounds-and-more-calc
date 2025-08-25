@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחשבון המרת משקלים</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --bg: #f8f9ff;
+            --card: #ffffff;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --border: #e2e8f0;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --info: #74b9ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        .converter-container {
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        .converter-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .converter-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .converter-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .converter-body {
+            padding: 25px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        .input-group input, 
+        .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            text-align: right;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+        
+        .weight-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .weight-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .swap-btn {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0 15px;
+        }
+        
+        .swap-btn button {
+            background: white;
+            border: 1px solid var(--border);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .swap-btn button:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(180deg);
+        }
+        
+        .convert-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 10px 0 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
+        }
+        
+        .result-box {
+            background: rgba(108, 92, 231, 0.05);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .result-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .quick-conversions {
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .quick-header {
+            background: linear-gradient(135deg, var(--success) 0%, #55a3ff 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .quick-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .quick-body {
+            padding: 25px;
+        }
+        
+        .conversion-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .conversion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .conversion-from {
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .conversion-to {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .unit-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .unit-badge.metric {
+            background: var(--success);
+        }
+        
+        .unit-badge.imperial {
+            background: var(--warning);
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+            
+            .weight-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Weight Converter -->
+        <div class="converter-container">
+            <div class="converter-header">
+                <h1>🏋️ המרת משקלים</h1>
+                <p>המר בין יחידות משקל שונות</p>
+            </div>
+            <div class="converter-body">
+                <div class="weight-row">
+                    <div class="input-group">
+                        <label>כמות</label>
+                        <input type="number" id="fromAmount" placeholder="הכנס כמות" step="any">
+                    </div>
+                    <div class="input-group">
+                        <label>יחידה</label>
+                        <select id="fromUnit">
+                            <option value="g">גרם (g)</option>
+                            <option value="kg" selected>קילוגרם (kg)</option>
+                            <option value="t">טון (t)</option>
+                            <option value="lb">פאונד (lb)</option>
+                            <option value="oz">אונקיה (oz)</option>
+                            <option value="st">סטון (st)</option>
+                            <option value="mg">מיליגרם (mg)</option>
+                            <option value="ct">קרט (ct)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="swap-btn">
+                    <button onclick="swapUnits()">⇅</button>
+                </div>
+                
+                <div class="weight-row">
+                    <div class="input-group">
+                        <label>תוצאה</label>
+                        <input type="number" id="toAmount" placeholder="תוצאה" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>יחידה</label>
+                        <select id="toUnit">
+                            <option value="g" selected>גרם (g)</option>
+                            <option value="kg">קילוגרם (kg)</option>
+                            <option value="t">טון (t)</option>
+                            <option value="lb">פאונד (lb)</option>
+                            <option value="oz">אונקיה (oz)</option>
+                            <option value="st">סטון (st)</option>
+                            <option value="mg">מיליגרם (mg)</option>
+                            <option value="ct">קרט (ct)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="convert-btn" onclick="convertWeight()">המר משקל</button>
+                
+                <div class="result-box" id="resultBox" style="display: none;">
+                    <div class="result-value" id="resultValue">0</div>
+                    <div class="result-label" id="resultLabel">תוצאה</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Reference -->
+        <div class="quick-conversions">
+            <div class="quick-header">
+                <h2>📊 המרות נפוצות</h2>
+            </div>
+            <div class="quick-body">
+                <div class="conversion-item">
+                    <span class="conversion-from">1 קילוגרם</span>
+                    <span class="conversion-to">1,000 גרם</span>
+                </div>
+                <div class="conversion-item">
+                    <span class="conversion-from">1 טון</span>
+                    <span class="conversion-to">1,000 קילוגרם</span>
+                </div>
+                <div class="conversion-item">
+                    <span class="conversion-from">1 פאונד</span>
+                    <span class="conversion-to">453.59 גרם</span>
+                </div>
+                <div class="conversion-item">
+                    <span class="conversion-from">1 אונקיה</span>
+                    <span class="conversion-to">28.35 גרם</span>
+                </div>
+                <div class="conversion-item">
+                    <span class="conversion-from">1 סטון</span>
+                    <span class="conversion-to">6.35 קילוגרם</span>
+                </div>
+                <div class="conversion-item">
+                    <span class="conversion-from">1 קרט</span>
+                    <span class="conversion-to">0.2 גרם</span>
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border);">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                        <span class="unit-badge metric">מטרי</span>
+                        <span class="unit-badge imperial">אימפריאלי</span>
+                        <span class="unit-badge">תכשיטים</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Weight conversion factors to grams
+        const weightFactors = {
+            'g': 1,
+            'kg': 1000,
+            't': 1000000,
+            'lb': 453.592,
+            'oz': 28.3495,
+            'st': 6350.29,
+            'mg': 0.001,
+            'ct': 0.2
+        };
+
+        function convertWeight() {
+            const fromAmount = parseFloat(document.getElementById('fromAmount').value);
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            
+            if (isNaN(fromAmount) || fromAmount < 0) {
+                alert('אנא הכנס כמות תקינה');
+                return;
+            }
+            
+            // Convert to grams first, then to target unit
+            const grams = fromAmount * weightFactors[fromUnit];
+            const result = grams / weightFactors[toUnit];
+            
+            document.getElementById('toAmount').value = result.toFixed(6).replace(/\.?0+$/, '');
+            
+            // Show result box
+            const resultBox = document.getElementById('resultBox');
+            const resultValue = document.getElementById('resultValue');
+            const resultLabel = document.getElementById('resultLabel');
+            
+            resultValue.textContent = result.toFixed(6).replace(/\.?0+$/, '');
+            resultLabel.textContent = `${getUnitName(fromUnit)} ← ${getUnitName(toUnit)}`;
+            resultBox.style.display = 'block';
+        }
+
+        function getUnitName(unit) {
+            const unitNames = {
+                'g': 'גרם',
+                'kg': 'קילוגרם',
+                't': 'טון',
+                'lb': 'פאונד',
+                'oz': 'אונקיה',
+                'st': 'סטון',
+                'mg': 'מיליגרם',
+                'ct': 'קרט'
+            };
+            return unitNames[unit] || unit;
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const fromAmount = document.getElementById('fromAmount');
+            const toAmount = document.getElementById('toAmount');
+            
+            // Swap units
+            const tempUnit = fromUnit.value;
+            fromUnit.value = toUnit.value;
+            toUnit.value = tempUnit;
+            
+            // Swap amounts if there's a result
+            if (toAmount.value) {
+                fromAmount.value = toAmount.value;
+                convertWeight();
+            }
+        }
+
+        // Auto-convert on input change
+        document.getElementById('fromAmount').addEventListener('input', convertWeight);
+        document.getElementById('fromUnit').addEventListener('change', convertWeight);
+        document.getElementById('toUnit').addEventListener('change', convertWeight);
+
+        // Initialize with default conversion
+        document.getElementById('fromAmount').value = '1';
+        convertWeight();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974e109df0a25115',t:'MTc1NjE1NjEwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
